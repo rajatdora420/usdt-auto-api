@@ -29,12 +29,20 @@ app.post("/confirm", async (req, res) => {
 
     const amount = parseFloat(tx.value) / Math.pow(10, parseInt(tx.tokenDecimal));
 
-    const addRes = await axios.post("https://jinglesmm.com/adminapi/v2/payments/add", {
-      username,
-      amount: parseFloat(amount.toFixed(2)),
-      method: "Manual #6",
-      memo: "Auto Payment via API",
-      affiliate_commission: true
+    const payload = {
+ payment_id: 181680,
+  user: {
+    username: username
+  },
+  amount: {
+    value: amount.toFixed(2),
+    currency_code: "USD",
+    formatted: `$${amount.toFixed(2)}`
+  },
+  memo: "Auto Payment via USDT Script",
+  affiliate_commission: true
+};
+
     }, {
       headers: { "X-Api-Key": PANEL_API_KEY }
     });

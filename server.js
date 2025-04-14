@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 app.use(cors());
@@ -10,10 +12,28 @@ const PANEL_API_KEY = process.env.PANEL_API_KEY;
 const BSC_API_KEY = process.env.BSC_API_KEY;
 const TARGET_WALLET = "0x6C7723E803A2F625E9b845b4EBfd14f99be5ce22".toLowerCase();
 const USDT_CONTRACT = "0x55d398326f99059ff775485246999027b3197955";
+const TX_LOG_PATH = path.join(__dirname, "used_tx.txt");
+
+// ✅ Helper: check if txhash already used
+function isTxUsed(txhash) {
+  if (!fs.existsSync(TX_LOG_PATH)) return false;
+  const hashes = fs.readFileSync(TX_LOG_PATH, "utf8").split("\n");
+  return hashes.includes(txhash);
+}
+
+// ✅ Helper: mark txhash as used
+function markTxUsed(txhash) {
+  fs.appendFileSync(TX_LOG_PATH, txhash + "\n");
+}
 
 app.post("/confirm", async (req, res) => {
   const { username, txhash } = req.body;
   if (!username || !txhash) return res.status(400).json({ error: "Username or txHash missing" });
+
+  // ❌ Already processed?
+  if (isTxUsed(txhash)) {
+    return res.status(400).json({ error: "⚠️ This transaction has already been processed." });
+  }
 
   try {
     // ✅ 1. Validate user
@@ -47,17 +67,17 @@ app.post("/confirm", async (req, res) => {
 
     // ✅ 4. Send to panel
     const payload = {
-  username: username,
-  amount: parseFloat(amount.toFixed(2)),
-  method: "Manual #6"
-};
-
+      username: username,
+      amount: parseFloat(amount.toFixed(2)),
+      method: "Manual #6"
+    };
 
     const addRes = await axios.post("https://jinglesmm.com/adminapi/v2/payments/add", payload, {
       headers: { "X-Api-Key": PANEL_API_KEY }
     });
 
     if (addRes.data.error_code === 0) {
+      markTxUsed(txhash); // ✅ Save txhash so it can't be reused
       return res.json({ success: true, message: `${amount.toFixed(2)} USDT added to ${username}` });
     } else {
       return res.status(500).json({ error: addRes.data.error_message });

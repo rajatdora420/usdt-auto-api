@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>USDT Auto Confirm</title>
+</head>
+<body>
+  <h2>USDT Payment Confirmation</h2>
+  <form id="confirmForm">
+    <label>Username:</label>
+    <input type="text" id="username" required><br><br>
+    <label>Transaction Hash:</label>
+    <input type="text" id="txhash" required><br><br>
+    <button type="submit">Confirm Payment</button>
+  </form>
+
+  <pre id="result"></pre>
+
+  <script>
+    const form = document.getElementById("confirmForm");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const txhash = document.getElementById("txhash").value;
+
+      const res = await fetch("https://usdt-auto-api-production.up.railway.app/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, txhash })
+      });
+
+      const data = await res.json();
+      result.innerText = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>

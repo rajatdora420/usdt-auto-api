@@ -1,10 +1,9 @@
-const cors = require("cors");
-app.use(cors());
-
 const express = require("express");
+const cors = require("cors");
 const axios = require("axios");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const PANEL_API_KEY = process.env.PANEL_API_KEY;
@@ -13,28 +12,22 @@ const TARGET_WALLET = "0x6C7723E803A2F625E9b845b4EBfd14f99be5ce22".toLowerCase()
 
 app.post("/confirm", async (req, res) => {
   const { username, txhash } = req.body;
-  if (!username || !txhash) {
-    return res.status(400).json({ error: "Username or txHash missing" });
-  }
+  if (!username || !txhash) return res.status(400).json({ error: "Username or txHash missing" });
 
   try {
     const userRes = await axios.get(`https://jinglesmm.com/adminapi/v2/users?username=${username}`, {
       headers: { "X-Api-Key": PANEL_API_KEY }
     });
 
-    if (!userRes.data?.data?.list?.length) {
-      return res.status(404).json({ error: "Username not found" });
-    }
+    if (!userRes.data?.data?.list?.length) return res.status(404).json({ error: "Username not found" });
 
     const txRes = await axios.get(`https://api.bscscan.com/api?module=account&action=tokentx&txhash=${txhash}&apikey=${BSC_API_KEY}`);
     const tx = txRes.data?.result?.[0];
 
-    if (!tx || tx.tokenSymbol !== "USDT" || tx.to.toLowerCase() !== TARGET_WALLET) {
+    if (!tx || tx.tokenSymbol !== "USDT" || tx.to.toLowerCase() !== TARGET_WALLET)
       return res.status(400).json({ error: "Invalid or unrelated transaction" });
-    }
 
-    const decimals = parseInt(tx.tokenDecimal);
-    const amount = parseFloat(tx.value) / Math.pow(10, decimals);
+    const amount = parseFloat(tx.value) / Math.pow(10, parseInt(tx.tokenDecimal));
 
     const addRes = await axios.post("https://jinglesmm.com/adminapi/v2/payments/add", {
       username,

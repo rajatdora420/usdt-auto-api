@@ -47,18 +47,11 @@ app.post("/confirm", async (req, res) => {
 
     // ✅ 4. Send to panel
     const payload = {
-      payment_id: 181680,
-      user: {
-        username: username
-      },
-      amount: {
-        value: amount.toFixed(2),
-        currency_code: "USD",
-        formatted: `$${amount.toFixed(2)}`
-      },
-      memo: "Auto Payment via USDT Script",
-      affiliate_commission: true
-    };
+  username: username,
+  amount: parseFloat(amount.toFixed(2)),
+  method: "Manual #6"
+};
+
 
     const addRes = await axios.post("https://jinglesmm.com/adminapi/v2/payments/add", payload, {
       headers: { "X-Api-Key": PANEL_API_KEY }

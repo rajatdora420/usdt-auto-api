@@ -74,6 +74,7 @@ const payload = {
   username: username,
   amount: parseFloat(totalCredit.toFixed(2)),
   method: "Manual #6"
+  memo: `Auto Payment | TxID: ${txid}`
 };
 
     const addRes = await axios.post("https://jinglesmm.com/adminapi/v2/payments/add", payload, {
@@ -82,7 +83,10 @@ const payload = {
 
     if (addRes.data.error_code === 0) {
       markTxUsed(txhash); // ✅ Save txhash so it can't be reused
-      return res.json({ success: true, message: `${amount.toFixed(2)} USDT added to ${username}` });
+      return res.json({
+  success: true,
+  message: `💰 ${match.amount} USDT + ${bonusAmount.toFixed(2)} Bonus credited to ${username} (Total: ${totalCredit.toFixed(2)} USDT)`
+});
     } else {
       return res.status(500).json({ error: addRes.data.error_message });
     }

@@ -74,6 +74,7 @@ const payload = {
   username: username,
   amount: parseFloat(totalCredit.toFixed(2)),
   method: "Manual #6"
+  memo: `Auto Payment | TxID: ${txhash}` // Added memo field
 };
 
     const addRes = await axios.post("https://jinglesmm.com/adminapi/v2/payments/add", payload, {

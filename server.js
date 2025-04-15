@@ -85,7 +85,7 @@ const payload = {
       markTxUsed(txhash); // ✅ Save txhash so it can't be reused
       return res.json({
   success: true,
-  message: `💰 ${match.amount} USDT + ${bonusAmount.toFixed(2)} Bonus credited to ${username} (Total: ${totalCredit.toFixed(2)} USDT)`
+  message: `💰 ${amount} USDT + ${bonusAmount.toFixed(2)} Bonus credited to ${username} (Total: ${totalCredit.toFixed(2)} USDT)`
 });
     } else {
       return res.status(500).json({ error: addRes.data.error_message });

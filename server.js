@@ -70,11 +70,11 @@ app.post("/confirm", async (req, res) => {
 const bonusAmount = amount * (bonusPercent / 100);
 const totalCredit = amount + bonusAmount;
 
+console.log("Before payload:", { username, amount });
 const payload = {
   username: username,
   amount: parseFloat(totalCredit.toFixed(2)),
-  method: "Manual #6"
-  memo: "Auto Payment" // Added memo field
+  method: "Manual #6",
 };
 
     const addRes = await axios.post("https://jinglesmm.com/adminapi/v2/payments/add", payload, {

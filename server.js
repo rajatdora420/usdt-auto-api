@@ -66,11 +66,15 @@ app.post("/confirm", async (req, res) => {
     const amount = parseInt(transferLog.data, 16) / 1e18; // 18 decimals for USDT
 
     // ✅ 4. Send to panel
-    const payload = {
-      username: username,
-      amount: parseFloat(amount.toFixed(2)),
-      method: "Manual #6"
-    };
+    const bonusPercent = amount < 500 ? 5 : 7;
+const bonusAmount = amount * (bonusPercent / 100);
+const totalCredit = amount + bonusAmount;
+
+const payload = {
+  username: username,
+  amount: parseFloat(totalCredit.toFixed(2)),
+  method: "Manual #6"
+};
 
     const addRes = await axios.post("https://jinglesmm.com/adminapi/v2/payments/add", payload, {
       headers: { "X-Api-Key": PANEL_API_KEY }

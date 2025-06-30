@@ -25,7 +25,7 @@
       const username = document.getElementById("username").value;
       const txhash = document.getElementById("txhash").value;
 
-      const res = await fetch("https://usdt-auto-api-production.up.railway.app/confirm", {
+      const res = await fetch("https://usdt-auto-api.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, txhash })
